@@ -1,6 +1,6 @@
 package com.mapnaom.foodreservation.specifications;
 
-import com.mapnaom.foodreservation.entities.DailyFoodOptions;
+import com.mapnaom.foodreservation.entities.FoodMenu;
 import com.mapnaom.foodreservation.entities.Personnel;
 import com.mapnaom.foodreservation.entities.Reservation;
 import com.mapnaom.foodreservation.searchForms.ReservationSearchForm;
@@ -60,8 +60,8 @@ public class ReservationSpecification {
 
             // فیلتر بر اساس نام غذای رزرو شده
             if (searchForm.getReservedFood() != null && !searchForm.getReservedFood().isEmpty()) {
-                Join<Reservation, DailyFoodOptions> foodPlanJoin = root.join("dailyFoodOptions", JoinType.LEFT);
-                Join<DailyFoodOptions, ?> foodJoin = foodPlanJoin.join("food", JoinType.LEFT);
+                Join<Reservation, FoodMenu> foodPlanJoin = root.join("foodMenu", JoinType.LEFT);
+                Join<FoodMenu, ?> foodJoin = foodPlanJoin.join("food", JoinType.LEFT);
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.like(
                                 criteriaBuilder.lower(foodJoin.get("name")),

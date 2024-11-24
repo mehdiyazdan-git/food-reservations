@@ -4,30 +4,30 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table(name = "food_plan")
 @Getter
 @Setter
 @ToString
-@Builder
-@AllArgsConstructor
 @RequiredArgsConstructor
-public class DailyFoodOptions {
-
+public class FoodContractor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+    private String name;
 
-    @OneToMany
-    @JoinColumn(name = "food_id")
-    private List<Food> foodList;
 
-    private LocalDate localDate;
+    @OneToMany(mappedBy = "foodContractor", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @ToString.Exclude
+    private Set<FoodMenu> foodMenus = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "work_location_id")
+    private WorkLocation workLocation;
 
     @Override
     public final boolean equals(Object o) {
@@ -36,8 +36,8 @@ public class DailyFoodOptions {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        DailyFoodOptions dailyFoodOptions = (DailyFoodOptions) o;
-        return getId() != null && Objects.equals(getId(), dailyFoodOptions.getId());
+        FoodContractor that = (FoodContractor) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
     }
 
     @Override

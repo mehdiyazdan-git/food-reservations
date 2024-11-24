@@ -1,68 +1,78 @@
 package com.mapnaom.foodreservation.mappers;
 
 import com.mapnaom.foodreservation.dtos.ReservationDto;
-import com.mapnaom.foodreservation.entities.DailyFoodOptions;
+import com.mapnaom.foodreservation.entities.FoodMenuItem;
 import com.mapnaom.foodreservation.entities.Personnel;
 import com.mapnaom.foodreservation.entities.Reservation;
-import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
-import com.mapnaom.foodreservation.repositories.DailyFoodOptionsRepository;
+import com.mapnaom.foodreservation.repositories.FoodMenuItemRepository;
 import com.mapnaom.foodreservation.repositories.PersonnelRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+import java.util.List;
+import java.util.Collection;
+
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class ReservationMapper {
 
     @Autowired
     protected PersonnelRepository personnelRepository;
 
     @Autowired
-    protected DailyFoodOptionsRepository dailyFoodOptionsRepository;
+    protected FoodMenuItemRepository foodMenuItemRepository;
 
-    @Mapping(source = "personnelId", target = "personnel")
-    @Mapping(source = "foodPlanId", target = "dailyFoodOptions")
+    // Mapping from DTO to Entity with ID resolution
+    @Mapping(source = "personnelId", target = "personnel", qualifiedByName = "mapToPersonnel")
+    @Mapping(source = "foodMenuItemId", target = "foodMenuItem", qualifiedByName = "mapToFoodMenuItem")
+    @Mapping(target = "id", ignore = true)
     public abstract Reservation toEntity(ReservationDto reservationDto);
 
+    // Mapping from Entity to DTO
     @Mapping(source = "personnel.id", target = "personnelId")
-    @Mapping(source = "dailyFoodOptions.id", target = "foodPlanId")
+    @Mapping(source = "foodMenuItem.id", target = "foodMenuItemId")
     public abstract ReservationDto toDto(Reservation reservation);
 
+    // Partial Update Mapping
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "personnelId", target = "personnel")
-    @Mapping(source = "foodPlanId", target = "dailyFoodOptions")
+    @Mapping(source = "personnelId", target = "personnel", qualifiedByName = "mapToPersonnel")
+    @Mapping(source = "foodMenuItemId", target = "foodMenuItem", qualifiedByName = "mapToFoodMenuItem")
+    @Mapping(target = "id", ignore = true)
     public abstract void partialUpdate(ReservationDto reservationDto, @MappingTarget Reservation reservation);
 
-    // متد کمک برای تبدیل personnelId به Personnel
-    protected Personnel mapPersonnel(Long personnelId) {
+    // List mappings
+    public abstract List<ReservationDto> toDtoList(Collection<Reservation> reservations);
+
+    public abstract List<Reservation> toEntityList(Collection<ReservationDto> reservationDtos);
+
+    // MapStruct Custom Mapping Logic for Personnel
+    @Named("mapToPersonnel")
+    protected Personnel mapToPersonnel(Long personnelId) {
         if (personnelId == null) {
             return null;
         }
         return personnelRepository.findById(personnelId)
-                .orElseThrow(() -> new ResourceNotFoundException("Personnel not found with id: " + personnelId));
+                .orElseThrow(() -> new EntityNotFoundException("Personnel not found with ID: " + personnelId));
     }
 
-    // متد کمک برای تبدیل foodPlanId به DailyFoodOptions
-    protected DailyFoodOptions mapFoodPlan(Long foodPlanId) {
-        if (foodPlanId == null) {
+    // MapStruct Custom Mapping Logic for FoodMenuItem
+    @Named("mapToFoodMenuItem")
+    protected FoodMenuItem mapToFoodMenuItem(Integer foodMenuItemId) {
+        if (foodMenuItemId == null) {
             return null;
         }
-        return dailyFoodOptionsRepository.findById(foodPlanId)
-                .orElseThrow(() -> new ResourceNotFoundException("DailyFoodOptions not found with id: " + foodPlanId));
+        return foodMenuItemRepository.findById(foodMenuItemId)
+                .orElseThrow(() -> new EntityNotFoundException("FoodMenuItem not found with ID: " + foodMenuItemId));
     }
 
-    // متد کمک برای تبدیل Personnel به personnelId
-    protected Long map(Personnel personnel) {
-        if (personnel == null) {
-            return null;
-        }
-        return personnel.getId();
+    // Utility for mapping back
+    protected Long mapPersonnelToId(Personnel personnel) {
+        return personnel != null ? personnel.getId() : null;
     }
 
-    // متد کمک برای تبدیل DailyFoodOptions به foodPlanId
-    protected Long map(DailyFoodOptions dailyFoodOptions) {
-        if (dailyFoodOptions == null) {
-            return null;
-        }
-        return dailyFoodOptions.getId();
+    protected Integer mapFoodMenuItemToId(FoodMenuItem foodMenuItem) {
+        return foodMenuItem != null ? foodMenuItem.getId() : null;
     }
 }

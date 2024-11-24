@@ -1,12 +1,13 @@
 package com.mapnaom.foodreservation.services;
 
 import com.github.mfathi91.time.PersianDate;
-import com.mapnaom.foodreservation.dtos.DailyFoodOptionsDto;
 import com.mapnaom.foodreservation.dtos.FoodPlanImportResponse;
-import com.mapnaom.foodreservation.entities.DailyFoodOptions;
+import com.mapnaom.foodreservation.entities.FoodMenu;
 import com.mapnaom.foodreservation.entities.Food;
+import com.mapnaom.foodreservation.entities.FoodMenuDto;
+import com.mapnaom.foodreservation.entities.FoodMenuItem;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
-import com.mapnaom.foodreservation.mappers.DailyFoodOptionsMapper;
+import com.mapnaom.foodreservation.mappers.FoodMenuMapper;
 import com.mapnaom.foodreservation.repositories.DailyFoodOptionsRepository;
 import com.mapnaom.foodreservation.repositories.FoodRepository;
 import com.mapnaom.foodreservation.searchForms.FoodPlanSearchForm;
@@ -29,9 +30,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class FoodPlanService {
+public class FoodMenuService {
     private final DailyFoodOptionsRepository dailyFoodOptionsRepository;
-    private final DailyFoodOptionsMapper foodPlanMapper;
+    private final FoodMenuMapper foodPlanMapper;
     private final FoodRepository foodRepository;
 
     /**
@@ -39,61 +40,61 @@ public class FoodPlanService {
      *
      * @param searchForm فرم جستجو
      * @param pageable   اطلاعات صفحه‌بندی و مرتب‌سازی
-     * @return صفحه‌ای از DailyFoodOptionsDto
+     * @return صفحه‌ای از FoodMenuDto
      */
     @Transactional(readOnly = true)
-    public Page<DailyFoodOptionsDto> findAll(FoodPlanSearchForm searchForm, Pageable pageable) {
-        Specification<DailyFoodOptions> specification = FoodPlanSpecification.getFoodPlanSpecification(searchForm);
-        Page<DailyFoodOptions> foodPlanPage = dailyFoodOptionsRepository.findAll(specification, pageable);
-        List<DailyFoodOptionsDto> dailyFoodOptionsDtos = foodPlanPage.stream()
+    public Page<FoodMenuDto> findAll(FoodPlanSearchForm searchForm, Pageable pageable) {
+        Specification<FoodMenu> specification = FoodPlanSpecification.getFoodPlanSpecification(searchForm);
+        Page<FoodMenu> foodPlanPage = dailyFoodOptionsRepository.findAll(specification, pageable);
+        List<FoodMenuDto> foodMenuDtoList = foodPlanPage.stream()
                 .map(foodPlanMapper::toDto)
                 .collect(Collectors.toList());
-        return new PageImpl<>(dailyFoodOptionsDtos, pageable, foodPlanPage.getTotalElements());
+        return new PageImpl<>(foodMenuDtoList, pageable, foodPlanPage.getTotalElements());
     }
 
     /**
      * پیدا کردن یک برنامه غذایی بر اساس شناسه
      *
      * @param id شناسه برنامه غذایی
-     * @return DailyFoodOptionsDto
+     * @return FoodMenuDto
      * @throws ResourceNotFoundException اگر برنامه غذایی با شناسه داده شده یافت نشد
      */
     @Transactional(readOnly = true)
-    public DailyFoodOptionsDto findById(Long id) {
-        DailyFoodOptions dailyFoodOptions = dailyFoodOptionsRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DailyFoodOptions not found with id: " + id));
-        return foodPlanMapper.toDto(dailyFoodOptions);
+    public FoodMenuDto findById(Long id) {
+        FoodMenu foodMenu = dailyFoodOptionsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("FoodMenu not found with id: " + id));
+        return foodPlanMapper.toDto(foodMenu);
     }
 
     /**
      * ایجاد یک برنامه غذایی جدید
      *
-     * @param dailyFoodOptionsDto داده‌های برنامه غذایی جدید
-     * @return DailyFoodOptionsDto ایجاد شده
+     * @param foodMenuDto داده‌های برنامه غذایی جدید
+     * @return FoodMenuDto ایجاد شده
      */
     @Transactional
-    public DailyFoodOptionsDto create(DailyFoodOptionsDto dailyFoodOptionsDto) {
-        DailyFoodOptions dailyFoodOptions = foodPlanMapper.toEntity(dailyFoodOptionsDto);
-        DailyFoodOptions savedDailyFoodOptions = dailyFoodOptionsRepository.save(dailyFoodOptions);
-        return foodPlanMapper.toDto(savedDailyFoodOptions);
+    public FoodMenuDto create(FoodMenuDto foodMenuDto) {
+        FoodMenu foodMenu = foodPlanMapper.toEntity(foodMenuDto);
+        FoodMenu savedFoodMenu = dailyFoodOptionsRepository.save(foodMenu);
+        return foodPlanMapper.toDto(savedFoodMenu);
     }
 
     /**
      * به‌روزرسانی یک برنامه غذایی موجود
      *
      * @param id          شناسه برنامه غذایی مورد نظر برای به‌روزرسانی
-     * @param dailyFoodOptionsDto داده‌های جدید برای به‌روزرسانی
-     * @return DailyFoodOptionsDto به‌روز شده
+     * @param foodMenuDto داده‌های جدید برای به‌روزرسانی
+     * @return FoodMenuDto به‌روز شده
      * @throws ResourceNotFoundException اگر برنامه غذایی با شناسه داده شده یافت نشد
      */
     @Transactional
-    public DailyFoodOptionsDto update(Long id, DailyFoodOptionsDto dailyFoodOptionsDto) {
-        DailyFoodOptions existingDailyFoodOptions = dailyFoodOptionsRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("DailyFoodOptions not found with id: " + id));
+    public FoodMenuDto update(Long id, FoodMenuDto foodMenuDto) {
+        FoodMenu existingFoodMenu = dailyFoodOptionsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("FoodMenu not found with id: " + id));
 
-        foodPlanMapper.partialUpdate(dailyFoodOptionsDto, existingDailyFoodOptions);
-        DailyFoodOptions updatedDailyFoodOptions = dailyFoodOptionsRepository.save(existingDailyFoodOptions);
-        return foodPlanMapper.toDto(updatedDailyFoodOptions);
+        foodPlanMapper.partialUpdate(foodMenuDto, existingFoodMenu);
+        FoodMenu updatedFoodMenu = dailyFoodOptionsRepository.save(existingFoodMenu);
+        return foodPlanMapper.toDto(updatedFoodMenu);
     }
 
     /**
@@ -105,7 +106,7 @@ public class FoodPlanService {
     @Transactional
     public void delete(Long id) {
         if (!dailyFoodOptionsRepository.existsById(id)) {
-            throw new ResourceNotFoundException("DailyFoodOptions not found with id: " + id);
+            throw new ResourceNotFoundException("FoodMenu not found with id: " + id);
         }
         dailyFoodOptionsRepository.deleteById(id);
     }
@@ -200,13 +201,13 @@ public class FoodPlanService {
                     continue;
                 }
 
-                List<Food> foods = new ArrayList<>();
+                List<FoodMenuItem> foods = new ArrayList<>();
                 boolean hasError = false;
                 for (String foodName : foodNames) {
                     try {
                         Food food = foodRepository.findByName(foodName)
                                 .orElseThrow(() -> new ResourceNotFoundException("غذا با نام '" + foodName + "' یافت نشد."));
-                        foods.add(food);
+                        foods.add(new FoodMenuItem(food));
                     } catch (ResourceNotFoundException e) {
                         errorMessages.add("تاریخ " + dateStr + ": " + e.getMessage());
                         hasError = true;
@@ -218,11 +219,11 @@ public class FoodPlanService {
                     continue;
                 }
 
-                // ایجاد و ذخیره موجودیت DailyFoodOptions
-                DailyFoodOptions dailyFoodOptions = new DailyFoodOptions();
-                dailyFoodOptions.setLocalDate(date);
-                dailyFoodOptions.setFoodList(foods);
-                dailyFoodOptionsRepository.save(dailyFoodOptions);
+                // ایجاد و ذخیره موجودیت FoodMenu
+                FoodMenu foodMenu = new FoodMenu();
+                foodMenu.setLocalDate(date);
+                foodMenu.setFoodMenuItems(foods);
+                dailyFoodOptionsRepository.save(foodMenu);
                 successCount++;
             }
 

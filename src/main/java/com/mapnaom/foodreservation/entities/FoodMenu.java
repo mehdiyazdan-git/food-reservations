@@ -4,40 +4,33 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 @Entity
-@Table(name = "work_location")
+@Table(name = "food_menu")
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @Builder
-public class WorkLocation {
+@AllArgsConstructor
+@RequiredArgsConstructor
+public class FoodMenu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String workLocationName;
-
-
-
-    @OneToMany(mappedBy = "workLocation", orphanRemoval = true)
-    private Set<FoodContractor> foodContractors = new LinkedHashSet<>();
+    @Column(name = "local_date")
+    private LocalDate localDate;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "workLocation", orphanRemoval = true)
-    private Set<Personnel> personnels = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "foodMenu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FoodMenuItem> foodMenuItems = new ArrayList<>();
 
-    // Constructors
-    public WorkLocation() {}
-
-    public WorkLocation(String workLocationName) {
-        this.workLocationName = workLocationName;
-    }
+    @ManyToOne
+    @JoinColumn(name = "food_contractor_id")
+    private FoodContractor foodContractor;
 
     @Override
     public final boolean equals(Object o) {
@@ -46,8 +39,8 @@ public class WorkLocation {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        WorkLocation that = (WorkLocation) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
+        FoodMenu foodMenu = (FoodMenu) o;
+        return getId() != null && Objects.equals(getId(), foodMenu.getId());
     }
 
     @Override
