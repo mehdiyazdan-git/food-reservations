@@ -1,6 +1,6 @@
 package com.mapnaom.foodreservation.specifications;
 
-import com.mapnaom.foodreservation.models.BranchManager;
+import com.mapnaom.foodreservation.entities.BranchManager;
 import com.mapnaom.foodreservation.searchForms.BranchManagerSearchForm;
 import org.springframework.data.jpa.domain.Specification;
 

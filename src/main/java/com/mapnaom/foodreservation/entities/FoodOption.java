@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.LinkedHashSet;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,21 +13,22 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class FoodContractor {
+public class FoodOption {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String name;
+    private Long id;
+    private BigDecimal price;
 
+    @ManyToOne
+    @JoinColumn(name = "menu_id",foreignKey = @ForeignKey(name = "fk_food_option_menu"))
+    private Menu menu;
 
-    @OneToMany(mappedBy = "foodContractor", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "foodOption")
     @ToString.Exclude
-    private Set<FoodMenu> foodMenus = new LinkedHashSet<>();
+    private Set<Order> orders;
 
-    @ToString.Exclude
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "work_location_id")
-    private WorkLocation workLocation;
+    @ManyToOne
+    @JoinColumn(name = "food_id",foreignKey = @ForeignKey(name = "fk_food_option_food"))
+    private Food food;
 
     @Override
     public final boolean equals(Object o) {
@@ -36,7 +37,7 @@ public class FoodContractor {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        FoodContractor that = (FoodContractor) o;
+        FoodOption that = (FoodOption) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 

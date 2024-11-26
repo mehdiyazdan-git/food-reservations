@@ -1,6 +1,6 @@
 package com.mapnaom.foodreservation.specifications;
 
-import com.mapnaom.foodreservation.models.Branch;
+import com.mapnaom.foodreservation.entities.Branch;
 import com.mapnaom.foodreservation.searchForms.BranchSearchForm;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -29,9 +29,6 @@ public class BranchSpecification {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("code")), "%" + searchForm.getCode().toLowerCase() + "%"));
             }
 
-            // Since 'active' is a primitive boolean, it defaults to false when not set.
-            // Adjust the BranchSearchForm to use Boolean instead of boolean for 'active' to allow null checks.
-            // For now, we'll filter by 'active' as per its value in the search form.
             if (searchForm.getActive() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("active"), searchForm.getActive()));
             }
@@ -39,5 +36,8 @@ public class BranchSpecification {
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+    public static Specification<Branch> hasName(String name) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("name"), "%" + name + "%");
     }
 }

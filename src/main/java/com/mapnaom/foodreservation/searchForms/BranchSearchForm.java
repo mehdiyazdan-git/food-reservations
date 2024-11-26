@@ -1,7 +1,7 @@
 package com.mapnaom.foodreservation.searchForms;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mapnaom.foodreservation.models.Branch;
+import com.mapnaom.foodreservation.entities.Branch;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

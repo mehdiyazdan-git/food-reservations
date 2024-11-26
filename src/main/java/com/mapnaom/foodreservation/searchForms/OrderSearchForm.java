@@ -1,6 +1,7 @@
 package com.mapnaom.foodreservation.searchForms;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mapnaom.foodreservation.entities.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * DTO for {@link com.mapnaom.foodreservation.models.Order}
+ * DTO for {@link Order}
  */
 @Data
 @AllArgsConstructor

@@ -1,26 +1,38 @@
-package com.mapnaom.foodreservation.models;
+package com.mapnaom.foodreservation.entities;
 
-import com.mapnaom.foodreservation.enums.RoleName;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-public class Role {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Menu {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private RoleName name;
+    private LocalDate date;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id",foreignKey = @ForeignKey(name = "fk_menu_branch"))
+    private Branch branch;
+
+    @ManyToOne
+    @JoinColumn(name = "contractor_id",foreignKey = @ForeignKey(name = "fk_menu_contractor"))
+    private Contractor contractor;
+
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Set<FoodOption> foodOptions = new LinkedHashSet<>();
 
     @Override
     public final boolean equals(Object o) {
@@ -29,8 +41,8 @@ public class Role {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Role role = (Role) o;
-        return getId() != null && Objects.equals(getId(), role.getId());
+        Menu menu = (Menu) o;
+        return getId() != null && Objects.equals(getId(), menu.getId());
     }
 
     @Override
@@ -38,3 +50,4 @@ public class Role {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
+

@@ -1,9 +1,10 @@
 package com.mapnaom.foodreservation.services;
 
 import com.mapnaom.foodreservation.dtos.BranchDto;
+import com.mapnaom.foodreservation.dtos.Select;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
 import com.mapnaom.foodreservation.mappers.BranchMapper;
-import com.mapnaom.foodreservation.models.Branch;
+import com.mapnaom.foodreservation.entities.Branch;
 import com.mapnaom.foodreservation.repositories.BranchRepository;
 import com.mapnaom.foodreservation.searchForms.BranchSearchForm;
 import com.mapnaom.foodreservation.specifications.BranchSpecification;
@@ -38,6 +39,12 @@ public class BranchService {
                 .map(branchMapper::toDto)
                 .collect(Collectors.toList());
         return new PageImpl<>(branchDtos, pageable, branchPage.getTotalElements());
+    }
+
+    public List<Select> selectList(String searchKey) {
+        return branchRepository.findAll().stream()
+                .map(i -> new Select(i.getId(), i.getName()))
+                .collect(Collectors.toList());
     }
 
     /**

@@ -3,7 +3,7 @@ package com.mapnaom.foodreservation.services;
 import com.mapnaom.foodreservation.dtos.BranchManagerDto;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
 import com.mapnaom.foodreservation.mappers.BranchManagerMapper;
-import com.mapnaom.foodreservation.models.BranchManager;
+import com.mapnaom.foodreservation.entities.BranchManager;
 import com.mapnaom.foodreservation.repositories.BranchManagerRepository;
 import com.mapnaom.foodreservation.searchForms.BranchManagerSearchForm;
 import com.mapnaom.foodreservation.specifications.BranchManagerSpecification;

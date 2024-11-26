@@ -4,33 +4,33 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table(name = "food_menu")
 @Getter
 @Setter
 @ToString
-@Builder
-@AllArgsConstructor
 @RequiredArgsConstructor
-public class FoodMenu {
-
+public class Branch {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "local_date")
-    private LocalDate localDate;
+    private String name;
+    private String code;
+    private boolean active;
 
+    @OneToMany(mappedBy = "branch")
     @ToString.Exclude
-    @OneToMany(mappedBy = "foodMenu", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FoodMenuItem> foodMenuItems = new ArrayList<>();
+    private Set<Employee> employees;
+
+    @OneToOne(mappedBy = "branch")
+    private BranchManager branchManager;
 
     @ManyToOne
-    @JoinColumn(name = "food_contractor_id")
-    private FoodContractor foodContractor;
+    @JoinColumn(name = "contractor_id")
+    private Contractor contractor;
 
     @Override
     public final boolean equals(Object o) {
@@ -39,8 +39,8 @@ public class FoodMenu {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        FoodMenu foodMenu = (FoodMenu) o;
-        return getId() != null && Objects.equals(getId(), foodMenu.getId());
+        Branch branch = (Branch) o;
+        return getId() != null && Objects.equals(getId(), branch.getId());
     }
 
     @Override
@@ -48,3 +48,4 @@ public class FoodMenu {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
+

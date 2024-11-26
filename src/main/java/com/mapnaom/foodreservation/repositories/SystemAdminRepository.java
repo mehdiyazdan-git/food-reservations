@@ -1,6 +1,6 @@
 package com.mapnaom.foodreservation.repositories;
 
-import com.mapnaom.foodreservation.models.SystemAdmin;
+import com.mapnaom.foodreservation.entities.SystemAdmin;
 import org.springframework.stereotype.Repository;
 
 // Repository for SystemAdmin

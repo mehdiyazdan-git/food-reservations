@@ -1,6 +1,7 @@
 package com.mapnaom.foodreservation.searchForms;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mapnaom.foodreservation.entities.BranchManager;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.mapnaom.foodreservation.models.BranchManager}
+ * DTO for {@link BranchManager}
  */
 @Data
 @AllArgsConstructor

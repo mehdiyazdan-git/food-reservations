@@ -3,7 +3,7 @@ package com.mapnaom.foodreservation.services;
 import com.mapnaom.foodreservation.dtos.EmployeeDto;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
 import com.mapnaom.foodreservation.mappers.EmployeeMapper;
-import com.mapnaom.foodreservation.models.Employee;
+import com.mapnaom.foodreservation.entities.Employee;
 import com.mapnaom.foodreservation.repositories.EmployeeRepository;
 import com.mapnaom.foodreservation.searchForms.EmployeeSearchForm;
 import com.mapnaom.foodreservation.specifications.EmployeeSpecification;

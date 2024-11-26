@@ -1,7 +1,7 @@
 package com.mapnaom.foodreservation.mappers;
 
 import com.mapnaom.foodreservation.dtos.SystemAdminDto;
-import com.mapnaom.foodreservation.models.SystemAdmin;
+import com.mapnaom.foodreservation.entities.SystemAdmin;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)

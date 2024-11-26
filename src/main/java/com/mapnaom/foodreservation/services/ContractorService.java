@@ -3,7 +3,7 @@ package com.mapnaom.foodreservation.services;
 import com.mapnaom.foodreservation.dtos.ContractorDto;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
 import com.mapnaom.foodreservation.mappers.ContractorMapper;
-import com.mapnaom.foodreservation.models.Contractor;
+import com.mapnaom.foodreservation.entities.Contractor;
 import com.mapnaom.foodreservation.repositories.ContractorRepository;
 import com.mapnaom.foodreservation.searchForms.ContractorSearchForm;
 import com.mapnaom.foodreservation.specifications.ContractorSpecification;

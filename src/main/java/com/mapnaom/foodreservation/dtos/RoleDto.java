@@ -1,6 +1,7 @@
 package com.mapnaom.foodreservation.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mapnaom.foodreservation.entities.Role;
 import com.mapnaom.foodreservation.enums.RoleName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.mapnaom.foodreservation.models.Role}
+ * DTO for {@link Role}
  */
 @Data
 @AllArgsConstructor

@@ -4,7 +4,7 @@ package com.mapnaom.foodreservation.services;
 import com.mapnaom.foodreservation.dtos.OrderDto;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
 import com.mapnaom.foodreservation.mappers.OrderMapper;
-import com.mapnaom.foodreservation.models.Order;
+import com.mapnaom.foodreservation.entities.Order;
 import com.mapnaom.foodreservation.repositories.OrderRepository;
 import com.mapnaom.foodreservation.searchForms.OrderSearchForm;
 import com.mapnaom.foodreservation.specifications.OrderSpecification;

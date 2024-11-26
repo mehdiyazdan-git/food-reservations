@@ -1,4 +1,4 @@
-package com.mapnaom.foodreservation.models;
+package com.mapnaom.foodreservation.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;

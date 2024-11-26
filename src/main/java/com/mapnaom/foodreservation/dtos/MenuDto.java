@@ -1,6 +1,7 @@
 package com.mapnaom.foodreservation.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mapnaom.foodreservation.entities.Menu;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * DTO for {@link com.mapnaom.foodreservation.models.Menu}
+ * DTO for {@link Menu}
  */
 @Data
 @AllArgsConstructor

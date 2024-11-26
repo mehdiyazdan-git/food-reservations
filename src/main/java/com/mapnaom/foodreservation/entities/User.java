@@ -1,43 +1,35 @@
 package com.mapnaom.foodreservation.entities;
 
+import com.mapnaom.foodreservation.enums.RoleName;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "work_location")
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
-@Builder
-public class WorkLocation {
-
+@RequiredArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "users")
+public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String workLocationName;
+    @Column(unique = true)
+    private String username;
 
+    private String password; // Null for employees using Active Directory
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<RoleName> roles;
 
-    @OneToMany(mappedBy = "workLocation", orphanRemoval = true)
-    private Set<FoodContractor> foodContractors = new LinkedHashSet<>();
-
-    @ToString.Exclude
-    @OneToMany(mappedBy = "workLocation", orphanRemoval = true)
-    private Set<Personnel> personnels = new LinkedHashSet<>();
-
-    // Constructors
-    public WorkLocation() {}
-
-    public WorkLocation(String workLocationName) {
-        this.workLocationName = workLocationName;
-    }
+    private Boolean active;
 
     @Override
     public final boolean equals(Object o) {
@@ -46,8 +38,8 @@ public class WorkLocation {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        WorkLocation that = (WorkLocation) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
+        User user = (User) o;
+        return getId() != null && Objects.equals(getId(), user.getId());
     }
 
     @Override
@@ -55,3 +47,4 @@ public class WorkLocation {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
+

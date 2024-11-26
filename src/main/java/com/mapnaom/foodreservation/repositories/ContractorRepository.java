@@ -1,6 +1,6 @@
 package com.mapnaom.foodreservation.repositories;
 
-import com.mapnaom.foodreservation.models.Contractor;
+import com.mapnaom.foodreservation.entities.Contractor;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 

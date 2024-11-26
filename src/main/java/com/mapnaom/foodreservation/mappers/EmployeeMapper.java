@@ -2,8 +2,8 @@ package com.mapnaom.foodreservation.mappers;
 
 import com.mapnaom.foodreservation.dtos.EmployeeDto;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
-import com.mapnaom.foodreservation.models.Branch;
-import com.mapnaom.foodreservation.models.Employee;
+import com.mapnaom.foodreservation.entities.Branch;
+import com.mapnaom.foodreservation.entities.Employee;
 import com.mapnaom.foodreservation.repositories.BranchRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,7 @@ public abstract class EmployeeMapper {
     public abstract Employee toEntity(EmployeeDto employeeDto);
 
     @Mapping(source = "branch", target = "branchId")
+    @Mapping(source = "branch.name", target = "branchName")
     public abstract EmployeeDto toDto(Employee employee);
 
     @Mapping(source = "branchId", target = "branch")

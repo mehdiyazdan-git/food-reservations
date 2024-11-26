@@ -2,8 +2,8 @@ package com.mapnaom.foodreservation.mappers;
 
 import com.mapnaom.foodreservation.dtos.BranchManagerDto;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
-import com.mapnaom.foodreservation.models.Branch;
-import com.mapnaom.foodreservation.models.BranchManager;
+import com.mapnaom.foodreservation.entities.Branch;
+import com.mapnaom.foodreservation.entities.BranchManager;
 import com.mapnaom.foodreservation.repositories.BranchRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
