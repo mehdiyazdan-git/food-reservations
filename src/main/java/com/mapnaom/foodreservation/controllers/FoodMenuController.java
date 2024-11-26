@@ -1,9 +1,9 @@
 package com.mapnaom.foodreservation.controllers;
 
-import com.mapnaom.foodreservation.dtos.DailyFoodOptionsDto;
 import com.mapnaom.foodreservation.dtos.FoodPlanImportResponse;
+import com.mapnaom.foodreservation.entities.FoodMenuDto;
 import com.mapnaom.foodreservation.searchForms.FoodPlanSearchForm;
-import com.mapnaom.foodreservation.services.FoodPlanService;
+import com.mapnaom.foodreservation.services.FoodMenuService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,8 +24,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/food-plans")
 @RequiredArgsConstructor
-public class FoodPlanController {
-    private final FoodPlanService foodPlanService;
+public class FoodMenuController {
+    private final FoodMenuService foodMenuService;
 
     /**
      * دریافت تمام برنامه‌های غذایی به صورت صفحه‌بندی شده با شرایط جستجو
@@ -35,10 +35,10 @@ public class FoodPlanController {
      * @param sortBy      فیلدی که بر اساس آن مرتب‌سازی می‌شود (پیش‌فرض: "id")
      * @param order       نوع مرتب‌سازی (ASC یا DESC) (پیش‌فرض: "ASC")
      * @param searchForm  فرم جستجو شامل فیلدهای id، foodName و localDate
-     * @return صفحه‌ای از DailyFoodOptionsDto
+     * @return صفحه‌ای از FoodMenuDto
      */
     @GetMapping
-    public ResponseEntity<Page<DailyFoodOptionsDto>> findAll(
+    public ResponseEntity<Page<FoodMenuDto>> findAll(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
@@ -47,7 +47,7 @@ public class FoodPlanController {
     ) {
         Sort.Direction sortDirection = order.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-        Page<DailyFoodOptionsDto> foodPlanPage = foodPlanService.findAll(searchForm, pageable);
+        Page<FoodMenuDto> foodPlanPage = foodMenuService.findAll(searchForm, pageable);
         return ResponseEntity.ok(foodPlanPage);
     }
 
@@ -55,23 +55,23 @@ public class FoodPlanController {
      * دریافت یک برنامه غذایی بر اساس شناسه
      *
      * @param id شناسه برنامه غذایی
-     * @return DailyFoodOptionsDto
+     * @return FoodMenuDto
      */
     @GetMapping("/{id}")
-    public ResponseEntity<DailyFoodOptionsDto> findById(@PathVariable Long id) {
-        DailyFoodOptionsDto foodPlan = foodPlanService.findById(id);
+    public ResponseEntity<FoodMenuDto> findById(@PathVariable Long id) {
+        FoodMenuDto foodPlan = foodMenuService.findById(id);
         return ResponseEntity.ok(foodPlan);
     }
 
     /**
      * ایجاد یک برنامه غذایی جدید
      *
-     * @param dailyFoodOptionsDto داده‌های برنامه غذایی جدید
-     * @return DailyFoodOptionsDto ایجاد شده
+     * @param foodMenuDto داده‌های برنامه غذایی جدید
+     * @return FoodMenuDto ایجاد شده
      */
     @PostMapping
-    public ResponseEntity<DailyFoodOptionsDto> create(@Valid @RequestBody DailyFoodOptionsDto dailyFoodOptionsDto) {
-        DailyFoodOptionsDto createdFoodPlan = foodPlanService.create(dailyFoodOptionsDto);
+    public ResponseEntity<FoodMenuDto> create(@Valid @RequestBody FoodMenuDto foodMenuDto) {
+        FoodMenuDto createdFoodPlan = foodMenuService.create(foodMenuDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFoodPlan);
     }
 
@@ -79,12 +79,12 @@ public class FoodPlanController {
      * به‌روزرسانی یک برنامه غذایی موجود
      *
      * @param id شناسه برنامه غذایی مورد نظر برای به‌روزرسانی
-     * @param dailyFoodOptionsDto داده‌های جدید برای به‌روزرسانی
-     * @return DailyFoodOptionsDto به‌روز شده
+     * @param foodMenuDto داده‌های جدید برای به‌روزرسانی
+     * @return FoodMenuDto به‌روز شده
      */
     @PutMapping("/{id}")
-    public ResponseEntity<DailyFoodOptionsDto> update(@PathVariable Long id, @Valid @RequestBody DailyFoodOptionsDto dailyFoodOptionsDto) {
-        DailyFoodOptionsDto updatedFoodPlan = foodPlanService.update(id, dailyFoodOptionsDto);
+    public ResponseEntity<FoodMenuDto> update(@PathVariable Long id, @Valid @RequestBody FoodMenuDto foodMenuDto) {
+        FoodMenuDto updatedFoodPlan = foodMenuService.update(id, foodMenuDto);
         return ResponseEntity.ok(updatedFoodPlan);
     }
 
@@ -96,7 +96,7 @@ public class FoodPlanController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        foodPlanService.delete(id);
+        foodMenuService.delete(id);
         return ResponseEntity.noContent().build();
     }
     /**
@@ -120,7 +120,7 @@ public class FoodPlanController {
         }
 
         try {
-            FoodPlanImportResponse response = foodPlanService.importFoodPlanFromExcel(file);
+            FoodPlanImportResponse response = foodMenuService.importFoodPlanFromExcel(file);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

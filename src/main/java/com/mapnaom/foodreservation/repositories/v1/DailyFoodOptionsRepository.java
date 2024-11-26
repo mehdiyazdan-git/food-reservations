@@ -1,6 +1,6 @@
 package com.mapnaom.foodreservation.repositories.v1;
 
-import com.mapnaom.foodreservation.entities.DailyFoodOptions;
+import com.mapnaom.foodreservation.entities.FoodMenu;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 
 @Repository
-public interface DailyFoodOptionsRepository extends JpaRepository<DailyFoodOptions, Long>, JpaSpecificationExecutor<DailyFoodOptions> {
+public interface DailyFoodOptionsRepository extends JpaRepository<FoodMenu, Long>, JpaSpecificationExecutor<FoodMenu> {
 
 
     boolean existsByLocalDate(LocalDate date);

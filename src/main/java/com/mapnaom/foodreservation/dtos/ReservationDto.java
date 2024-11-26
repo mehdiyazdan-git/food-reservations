@@ -20,5 +20,5 @@ public class ReservationDto implements Serializable {
     @NotNull(message = "Personnel ID cannot be null")
     private Long personnelId;
     @NotNull(message = "Food plan ID cannot be null")
-    private Long foodPlanId;
+    private Long foodMenuItemId;
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -25,7 +27,10 @@ public class Personnel {
     @Column(unique = true, nullable = false)
     private String code;
 
-    @ManyToOne
+    @OneToMany
+    private List<Reservation> reservations;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "work_location_id")
     private WorkLocation workLocation;
 
@@ -44,5 +49,9 @@ public class Personnel {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public Collection<Reservation> getReservations() {
+        return reservations;
     }
 }

@@ -1,6 +1,6 @@
 package com.mapnaom.foodreservation.specifications;
 
-import com.mapnaom.foodreservation.entities.DailyFoodOptions;
+import com.mapnaom.foodreservation.entities.FoodMenu;
 import com.mapnaom.foodreservation.searchForms.FoodPlanSearchForm;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class FoodPlanSpecification {
 
-    public static Specification<DailyFoodOptions> getFoodPlanSpecification(FoodPlanSearchForm searchForm) {
+    public static Specification<FoodMenu> getFoodPlanSpecification(FoodPlanSearchForm searchForm) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
