@@ -4,7 +4,7 @@ import com.mapnaom.foodreservation.dtos.PersonnelDto;
 import com.mapnaom.foodreservation.entities.Personnel;
 import com.mapnaom.foodreservation.entities.WorkLocation;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
-import com.mapnaom.foodreservation.repositories.WorkLocationRepository;
+import com.mapnaom.foodreservation.repositories.v1.WorkLocationRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

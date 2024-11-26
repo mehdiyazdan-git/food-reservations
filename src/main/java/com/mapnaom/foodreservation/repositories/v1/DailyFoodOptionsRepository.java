@@ -1,4 +1,4 @@
-package com.mapnaom.foodreservation.repositories;
+package com.mapnaom.foodreservation.repositories.v1;
 
 import com.mapnaom.foodreservation.entities.DailyFoodOptions;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -5,8 +5,8 @@ import com.mapnaom.foodreservation.entities.DailyFoodOptions;
 import com.mapnaom.foodreservation.entities.Personnel;
 import com.mapnaom.foodreservation.entities.Reservation;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
-import com.mapnaom.foodreservation.repositories.DailyFoodOptionsRepository;
-import com.mapnaom.foodreservation.repositories.PersonnelRepository;
+import com.mapnaom.foodreservation.repositories.v1.DailyFoodOptionsRepository;
+import com.mapnaom.foodreservation.repositories.v1.PersonnelRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

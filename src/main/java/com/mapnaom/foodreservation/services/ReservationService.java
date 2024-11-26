@@ -4,7 +4,7 @@ import com.mapnaom.foodreservation.dtos.ReservationDto;
 import com.mapnaom.foodreservation.entities.Reservation;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
 import com.mapnaom.foodreservation.mappers.ReservationMapper;
-import com.mapnaom.foodreservation.repositories.ReservationRepository;
+import com.mapnaom.foodreservation.repositories.v1.ReservationRepository;
 import com.mapnaom.foodreservation.searchForms.ReservationSearchForm;
 import com.mapnaom.foodreservation.specifications.ReservationSpecification;
 import lombok.RequiredArgsConstructor;
