@@ -25,9 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,9 @@ public class FoodService {
 
     private final FoodRepository foodRepository;
     private final FoodMapper foodMapper;
+
+    private  ExcelReader<FoodDto> excelReader;
+
 
     Logger logger = LoggerFactory.getLogger(FoodService.class);
 
@@ -127,80 +132,54 @@ public class FoodService {
      * @return ImportResponse detailing the import results.
      */
     @Transactional
-    public ImportResponse<String, Map<String, String>, FoodDto> importFoodsFromExcel(MultipartFile file) {
-        ImportResponse<String, Map<String, String>, FoodDto> importResponse = new ImportResponse<>();
-
-        // Step 1: Initialize ExcelReader for FoodDto
-        ExcelReader<File, FoodDto> excelReader = new ExcelReader<>(FoodDto.class);
-
-        // Step 2: Convert MultipartFile to File (temporary file)
-        File tempFile = convertMultipartFileToFile(file);
-        if (tempFile == null) {
-            String errorMsg = "Failed to convert MultipartFile to File.";
-            importResponse.addErrorMessage(errorMsg);
-            logger.error(errorMsg);
-            return importResponse;
-        }
-
-        try {
-            // Step 3: Apply the ExcelReader to parse the file
-            ImportResponse<String, Map<String, String>, FoodDto> parseResponse = excelReader.apply(tempFile);
-
-            // Step 4: Set error counts and messages from parseResponse
-            importResponse.setFailCount(parseResponse.getFailCount().get());
-            importResponse.setErrorMessages(parseResponse.getErrorMessages());
-            importResponse.setFailedRecords(parseResponse.getFailedRecords());
-            importResponse.setFailedRecordsMap(parseResponse.getFailedRecordsMap());
-
-            // Step 5: Retrieve successfully parsed FoodDto records
-            List<FoodDto> foodDtos = parseResponse.getSuccessRecords();
-
-            if (!foodDtos.isEmpty()) {
-                // Step 6: Map DTOs to Entities
-                List<Food> foodsToSave = foodDtos.stream()
+    public ImportResponse<FoodDto> importFoodsFromExcel(MultipartFile file) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        ImportResponse<FoodDto> dtoList = excelReader.readExcel(file);
+        List<Food> savedAll = foodRepository.saveAll(
+                dtoList.getImportedRecords().stream()
                         .map(foodMapper::toEntity)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList())
 
-                // Step 7: Save all valid Food entities
-                List<Food> savedFoods = foodRepository.saveAll(foodsToSave);
+        );
 
-                // Step 8: Update success count
-                importResponse.setSuccessCount(savedFoods.size());
 
-                // Step 9: Validate save operation
-                if (savedFoods.size() != foodsToSave.size()) {
-                    int failedSaves = foodsToSave.size() - savedFoods.size();
-                    importResponse.setFailCount(importResponse.getFailCount().get() + failedSaves);
-                    importResponse.addErrorMessage("Mismatch in expected and actual saved records.");
-                }
-            }
-
-        } catch (Exception e) {
-            String errorMsg = "Error during Excel import: " + e.getMessage();
-            importResponse.addErrorMessage(errorMsg);
-            logger.error(errorMsg, e);
-        } finally {
-            // Step 10: Clean up temporary file
-            if (tempFile.exists()) {
-                boolean deleted = tempFile.delete();
-                if (!deleted) {
-                    logger.warn("Failed to delete temporary file: {}", tempFile.getAbsolutePath());
-                }
-            }
-        }
-
-        return importResponse;
+        return null;
     }
 
     /**
-     * Converts a MultipartFile to a File.
+     * Converts a MultipartFile to a File for further processing or storage.
+     * <p>
+     * This method takes a MultipartFile, typically received in a web application
+     * through file uploads, and writes its content to a temporary File stored in
+     * the system's temporary directory. The generated File can then be used
+     * for operations that require a standard File object.
+     * </p>
      *
-     * @param multipartFile The MultipartFile to convert.
-     * @return The converted File.
+     * <p><strong>Usage Example:</strong></p>
+     * <pre>
+     * {@code
+     * MultipartFile multipartFile = ...; // File received from a request
+     * File file = convertMultipartFileToFile(multipartFile);
+     * // Use the file (e.g., read, process, upload)
+     * }
+     * </pre>
+     *
+     * <p><strong>Important Notes:</strong></p>
+     * <ul>
+     *   <li>The file is created in the system's temporary directory, which may be cleared
+     *       periodically or upon application shutdown.</li>
+     *   <li>Ensure the returned File is deleted after use to avoid unnecessary resource usage.</li>
+     *   <li>If the MultipartFile is empty or invalid, an exception will be thrown.</li>
+     * </ul>
+     *
+     * @param multipartFile The MultipartFile to convert. Must not be null and must have valid content.
+     * @return The converted File stored in the system's temporary directory.
+     * @throws ExcelDataImportException if an error occurs during the conversion process.
+     * @see MultipartFile
+     * @see File
      */
-
     private File convertMultipartFileToFile(MultipartFile multipartFile) {
-        File tempFile = new File(System.getProperty("java.io.tmpdir"), Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        File tempFile = new File(System.getProperty("java.io.tmpdir"),
+                Objects.requireNonNull(multipartFile.getOriginalFilename()));
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             fos.write(multipartFile.getBytes());
         } catch (IOException e) {
@@ -209,4 +188,5 @@ public class FoodService {
         }
         return tempFile;
     }
+
 }

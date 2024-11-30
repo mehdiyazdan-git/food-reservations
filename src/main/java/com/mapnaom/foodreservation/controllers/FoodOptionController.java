@@ -104,9 +104,5 @@ public class FoodOptionController {
      * @param file فایل Excel حاوی داده‌های گزینه‌های غذایی
      * @return پاسخ وارد کردن شامل تعداد موفقیت‌آمیز و پیام‌های خطا
      */
-    @PostMapping("/import")
-    public ResponseEntity<ImportResponse> importFoodOptionsFromExcel(@RequestParam("file") MultipartFile file) {
-        ImportResponse response = foodOptionService.importFoodOptionsFromExcel(file);
-        return ResponseEntity.ok(response);
-    }
+   
 }

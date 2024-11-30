@@ -1,8 +1,8 @@
 package com.mapnaom.foodreservation.controllers;
 
-import com.mapnaom.foodreservation.dtos.FoodDto;
 import com.mapnaom.foodreservation.dtos.ImportResponse;
 import com.mapnaom.foodreservation.services.FoodService;
+import com.mapnaom.foodreservation.utils.ExcelCellError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/api/foods")
@@ -28,44 +32,12 @@ public class FoodImportController {
      * @return ResponseEntity containing ImportResponse with import results.
      */
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImportResponse<String, Map<String, String>, FoodDto>> importFoodsFromExcel(
-            @RequestParam("file") MultipartFile file) {
-
-        // Validate the uploaded file
-        if (file.isEmpty()) {
-            ImportResponse<String, Map<String, String>, FoodDto> response = new ImportResponse<>();
-            response.addErrorMessage("Uploaded file is empty.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    public ResponseEntity<?> importFoodsFromExcel(
+            @RequestParam("file") MultipartFile file) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        if (!Objects.equals(file.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+            return new ResponseEntity<>("Invalid file type. Please upload an Excel file.", HttpStatus.BAD_REQUEST);
         }
-
-        // Optionally, validate the file type (e.g., Excel MIME types)
-        String contentType = file.getContentType();
-        if (!isExcelFile(contentType)) {
-            ImportResponse<String, Map<String, String>, FoodDto> response = new ImportResponse<>();
-            response.addErrorMessage("Invalid file type. Please upload an Excel file.");
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(response);
-        }
-
-        try {
-            // Invoke the service method to import foods
-            ImportResponse<String, Map<String, String>, FoodDto> importResponse = foodService.importFoodsFromExcel(file);
-
-            // Determine HTTP status based on import results
-            if (importResponse.getFailCount().get() > 0) {
-                // Partial success: Some records failed to import
-                return ResponseEntity.status(HttpStatus.MULTI_STATUS).body(importResponse);
-            } else {
-                // All records imported successfully
-                return ResponseEntity.ok(importResponse);
-            }
-
-        } catch (Exception e) {
-            // Handle unexpected exceptions gracefully
-            log.error("Unexpected error during food import: {}", e.getMessage(), e);
-            ImportResponse<String, Map<String,String>,FoodDto> response = new ImportResponse<>();
-            response.addErrorMessage("An unexpected error occurred during import.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+                return new ResponseEntity<>(foodService.importFoodsFromExcel(file), HttpStatus.OK);
     }
 
     /**
