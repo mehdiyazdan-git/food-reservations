@@ -17,6 +17,8 @@ public class ExcelDataImporter {
 
     private static final Logger logger = LogManager.getLogger(ExcelDataImporter.class);
 
+
+
     public static <T> List<T> importData(MultipartFile file, Class<T> dtoClass) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("پرونده ارائه شده خالی است.");
@@ -45,17 +47,39 @@ public class ExcelDataImporter {
                 } catch (Exception e) {
                     String errorMsg = "خطا در ردیف " + (rowNum + 1) + ": " + e.getMessage();
                     logger.error(errorMsg, e);
-                    throw new ExcelDataImportException(e,errorMsg);
+                    throw new ExcelDataImportException(e, errorMsg);
                 }
             }
         } catch (IOException e) {
             String errorMsg = "خطا در خواندن فایل Excel: " + e.getMessage();
             logger.error(errorMsg, e);
-            throw new ExcelDataImportException(e,errorMsg);
+            throw new ExcelDataImportException(e, errorMsg);
         } catch (ExcelDataImportException e) {
             throw new RuntimeException(e);
         }
 
         return dtos;
+    }
+
+    public static Workbook createWorkbook(MultipartFile file) {
+        try {
+            return new XSSFWorkbook(file.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Sheet getFirstSheet(Workbook sheets) {
+        return sheets.getSheetAt(0);
+    }
+
+    public static List<Row> getDataRows(Sheet sheet) {
+        List<Row> rowList = new ArrayList<>();
+        for (Row row : sheet) {
+            if (row.getCell(0) != null) {
+                rowList.add(row);
+            }
+        }
+        return rowList;
     }
 }
