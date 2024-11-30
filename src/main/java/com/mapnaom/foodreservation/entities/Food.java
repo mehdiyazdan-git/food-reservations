@@ -21,4 +21,7 @@ public class Food {
     @OneToMany(mappedBy = "food", orphanRemoval = true)
     private List<FoodOption> foodOptions = new ArrayList<>();
 
+    public Food(String name) {
+        this.name = name;
+    }
 }

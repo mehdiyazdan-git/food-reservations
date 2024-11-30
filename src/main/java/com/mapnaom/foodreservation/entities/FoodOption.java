@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Entity
 public class FoodOption {
     @Id
     private Long id;
@@ -29,7 +29,7 @@ public class FoodOption {
     @ManyToOne
     @JoinColumn(name = "food_id",foreignKey = @ForeignKey(name = "fk_food_option_food"))
     private Food food;
-
+    // equals and hashCode methods
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

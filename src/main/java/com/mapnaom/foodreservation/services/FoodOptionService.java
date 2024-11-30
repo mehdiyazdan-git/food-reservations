@@ -2,10 +2,10 @@ package com.mapnaom.foodreservation.services;
 
 import com.mapnaom.foodreservation.dtos.FoodOptionDto;
 import com.mapnaom.foodreservation.dtos.ImportResponse;
+import com.mapnaom.foodreservation.entities.FoodOption;
 import com.mapnaom.foodreservation.exceptions.ExcelDataImportException;
 import com.mapnaom.foodreservation.exceptions.ResourceNotFoundException;
 import com.mapnaom.foodreservation.mappers.FoodOptionMapper;
-import com.mapnaom.foodreservation.entities.FoodOption;
 import com.mapnaom.foodreservation.repositories.FoodOptionRepository;
 import com.mapnaom.foodreservation.searchForms.FoodOptionSearchForm;
 import com.mapnaom.foodreservation.specifications.FoodOptionSpecification;
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 public class FoodOptionService {
 
     private final FoodOptionRepository foodOptionRepository;
+
     private final FoodOptionMapper foodOptionMapper;
 
     /**

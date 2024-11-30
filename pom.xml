@@ -116,6 +116,13 @@
             <artifactId>jalali-calendar</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.vavr/vavr -->
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.10.5</version>
+        </dependency>
+
     </dependencies>
 
     <build>

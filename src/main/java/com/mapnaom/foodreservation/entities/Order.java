@@ -7,12 +7,12 @@ import org.hibernate.proxy.HibernateProxy;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
 @Table(name = "orders")
+@Entity
 public class Order {
     @Id
     private Long id;

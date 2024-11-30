@@ -9,18 +9,22 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDate date;
+
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Set<FoodOption> foodOptions = new LinkedHashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "branch_id",foreignKey = @ForeignKey(name = "fk_menu_branch"))
@@ -30,9 +34,7 @@ public class Menu {
     @JoinColumn(name = "contractor_id",foreignKey = @ForeignKey(name = "fk_menu_contractor"))
     private Contractor contractor;
 
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private Set<FoodOption> foodOptions = new LinkedHashSet<>();
+    // equals and hashCode methods
 
     @Override
     public final boolean equals(Object o) {
