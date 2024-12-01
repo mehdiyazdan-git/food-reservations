@@ -138,7 +138,7 @@ public class FoodOptionService {
             errorMessages.add("خطا در وارد کردن داده‌ها از فایل Excel: " + e.getMessage());
         }
 
-        return new ImportResponse(successCount, errorMessages);
+        return null;
     }
     public byte[] exportCustomersToExcel() throws IOException {
         List<FoodOptionDto> customerDtos = foodOptionRepository.findAll().stream().map(foodOptionMapper::toDto)
