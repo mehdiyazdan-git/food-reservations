@@ -7,10 +7,14 @@ import com.mapnaom.foodreservation.services.BranchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * کنترلر برای مدیریت عملیات‌های مربوط به شعب
@@ -100,5 +104,24 @@ public class BranchController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         branchService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+    /**
+     * Endpoint to import foods from an uploaded Excel file.
+     *
+     * @param file The uploaded Excel file containing food data.
+     * @return ResponseEntity containing ImportResponse with import results.
+     */
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> importFoodsFromExcel(
+            @RequestParam("file") MultipartFile file){
+          try {
+
+              if (!Objects.equals(file.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+                  return new ResponseEntity<>("Invalid file type. Please upload an Excel file.", HttpStatus.BAD_REQUEST);
+              }
+              return new ResponseEntity<>(branchService.importBranchesFromExcel(file), HttpStatus.OK);
+          }catch (Exception e){
+              return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+          }
     }
 }

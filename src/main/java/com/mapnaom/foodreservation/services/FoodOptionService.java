@@ -10,7 +10,7 @@ import com.mapnaom.foodreservation.repositories.FoodOptionRepository;
 import com.mapnaom.foodreservation.searchForms.FoodOptionSearchForm;
 import com.mapnaom.foodreservation.specifications.FoodOptionSpecification;
 import com.mapnaom.foodreservation.utils.ExcelDataExporter;
-import com.mapnaom.foodreservation.utils.ExcelDataImporter;
+import com.mapnaom.foodreservation.utils.ExcelImporter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -114,28 +114,26 @@ public class FoodOptionService {
      * @return پاسخ وارد کردن شامل تعداد موفقیت‌آمیز و پیام‌های خطا
      */
     @Transactional
-    public ImportResponse importFoodOptionsFromExcel(MultipartFile file) {
-        int successCount = 0;
-        List<String> errorMessages = new ArrayList<>();
+    public ImportResponse<FoodOptionDto> importFoodOptionsFromExcel(MultipartFile file) {
+
 
         try {
             // استفاده از ExcelDataImporter برای وارد کردن داده‌ها
-            List<FoodOptionDto> foodOptionDtos = ExcelDataImporter.importData(file, FoodOptionDto.class);
+            List<FoodOptionDto> foodOptionDtos = ExcelImporter.importFromExcel(file, FoodOptionDto.class).getSuccessfulImports();
 
             for (FoodOptionDto dto : foodOptionDtos) {
                 try {
                     // تبدیل DTO به موجودیت و ذخیره در پایگاه داده
                     FoodOption foodOption = foodOptionMapper.toEntity(dto);
                     foodOptionRepository.save(foodOption);
-                    successCount++;
                 } catch (Exception e) {
                     String errorMsg = "خطا در ذخیره گزینه غذایی: " + dto.getFoodName() + " - " + e.getMessage();
-                    errorMessages.add(errorMsg);
                 }
             }
         } catch (ExcelDataImportException e) {
             // خطاهای مربوط به خواندن فایل Excel
-            errorMessages.add("خطا در وارد کردن داده‌ها از فایل Excel: " + e.getMessage());
+            //("خطا در وارد کردن داده‌ها از فایل Excel: " + e.getMessage())
+            throw new RuntimeException(e);
         }
 
         return null;

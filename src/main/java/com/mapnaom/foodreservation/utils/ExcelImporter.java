@@ -1,5 +1,6 @@
 package com.mapnaom.foodreservation.utils;
 
+import com.mapnaom.foodreservation.dtos.ImportResponse;
 import com.mapnaom.foodreservation.exceptions.ExcelDataImportException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -36,11 +37,11 @@ public final class ExcelImporter {
      * @return a list of populated objects
      * @throws ExcelDataImportException if an error occurs during import
      */
-    public static <T> List<T> importFromExcel(MultipartFile file, Class<T> clazz) throws ExcelDataImportException {
+    public static <T> ImportResponse<T> importFromExcel(MultipartFile file, Class<T> clazz) throws ExcelDataImportException {
         Objects.requireNonNull(file, "File must not be null");
         Objects.requireNonNull(clazz, "Class type must not be null");
 
-        List<T> resultList = new ArrayList<>();
+        ImportResponse<T> response = new ImportResponse<>();
 
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -61,52 +62,41 @@ public final class ExcelImporter {
                     .filter(field -> SUPPORTED_TYPES.contains(field.getType()))
                     .collect(Collectors.toMap(Field::getName, field -> field));
 
-            // Validate that all headers correspond to fields
-            for (String header : headerMap.keySet()) {
-                if (!fieldMap.containsKey(header)) {
-                    log.warn("No matching field found for header: {}", header);
-                }
-            }
-
             // Iterate over data rows
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-                T instance = clazz.getDeclaredConstructor().newInstance();
+                int rowIndex = row.getRowNum() + 1; // For error reporting
+                try {
+                    T instance = clazz.getDeclaredConstructor().newInstance();
 
-                for (Map.Entry<String, Integer> entry : headerMap.entrySet()) {
-                    String headerName = entry.getKey();
-                    int cellIndex = entry.getValue();
+                    for (Map.Entry<String, Integer> entry : headerMap.entrySet()) {
+                        String headerName = entry.getKey();
+                        int cellIndex = entry.getValue();
 
-                    Field field = fieldMap.get(headerName);
-                    if (field != null) {
-                        field.setAccessible(true);
-                        Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
-                        if (cell != null) {
-                            try {
+                        Field field = fieldMap.get(headerName);
+                        if (field != null) {
+                            field.setAccessible(true);
+                            Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+                            if (cell != null) {
                                 Object value = parseCellValue(cell, field.getType());
                                 field.set(instance, value);
-                            } catch (Exception e) {
-                                log.error("Error setting value for field '{}' at row {}, column '{}': {}",
-                                        field.getName(), row.getRowNum() + 1, headerName, e.getMessage());
-                                throw new ExcelDataImportException(
-                                        e, String.format("Error parsing cell at row %d, column '%s'",
-                                                                                row.getRowNum() + 1, headerName));
                             }
                         }
                     }
+                    response.incrementSuccess(instance);
+                } catch (Exception e) {
+                    log.error("Error processing row {}: {}", rowIndex, e.getMessage());
+                    response.incrementFailed();
+                    response.addError(rowIndex, new ExcelCellError(e.getMessage()));
                 }
-                resultList.add(instance);
             }
 
         } catch (IOException e) {
             log.error("IO Exception while reading Excel file: {}", e.getMessage());
             throw new ExcelDataImportException(e, "Failed to read Excel file");
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            log.error("Reflection Exception: {}", e.getMessage());
-            throw new ExcelDataImportException(e, "Failed to instantiate class: " + clazz.getName());
         }
 
-        return resultList;
+        return response;
     }
 
     /**
