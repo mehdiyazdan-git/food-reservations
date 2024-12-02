@@ -43,7 +43,7 @@ public class FieldProcessor {
         for (Field field : fields) {
             String fieldName = prefix.isEmpty() ? field.getName() : prefix + "." + field.getName();
 
-            // Exclude fields named "id" (case-insensitive)
+
             if (field.getName().equalsIgnoreCase("id")) {
                 continue;
             }
@@ -53,7 +53,6 @@ public class FieldProcessor {
             if (SUPPORTED_TYPES.contains(fieldType)) {
                 fieldMap.put(fieldName, field);
             } else if (Collection.class.isAssignableFrom(fieldType)) {
-                // Handle collections (e.g., List, Set)
                 Type genericType = field.getGenericType();
                 if (genericType instanceof ParameterizedType pt) {
                     Type[] actualTypeArguments = pt.getActualTypeArguments();
@@ -61,14 +60,12 @@ public class FieldProcessor {
                         Type actualType = actualTypeArguments[0];
                         if (actualType instanceof Class<?> actualClass) {
                             if (!SUPPORTED_TYPES.contains(actualClass) && !actualClass.isEnum()) {
-                                // Recursively process the generic type
                                 processClassFields(actualClass, fieldMap, fieldName);
                             }
                         }
                     }
                 }
             } else if (!fieldType.isArray() && !isComposite(fieldType)) {
-                // Handle nested objects
                 processClassFields(fieldType, fieldMap, fieldName);
             }
         }

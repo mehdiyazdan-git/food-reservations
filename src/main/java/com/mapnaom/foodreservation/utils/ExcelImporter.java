@@ -135,8 +135,7 @@ public final class ExcelImporter {
             // If the field is a collection, get its generic type
             if (Collection.class.isAssignableFrom(currentClass)) {
                 Type genericType = field.getGenericType();
-                if (genericType instanceof ParameterizedType) {
-                    ParameterizedType pt = (ParameterizedType) genericType;
+                if (genericType instanceof ParameterizedType pt) {
                     Type[] actualTypeArguments = pt.getActualTypeArguments();
                     if (actualTypeArguments.length == 1 && actualTypeArguments[0] instanceof Class) {
                         currentClass = (Class<?>) actualTypeArguments[0];
