@@ -11,20 +11,41 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * DTO representing the response of an import operation specific to Excel parsing.
- * It contains the total number of successful and failed imports, and a map of errors encountered.
- * @param <T> the type of the imported data
+ * It contains the total number of successful and failed imports, a map of errors encountered,
+ * and a list of successfully imported top-level DTOs.
+ *
+ * @param <T> the type of the top-level imported data
  */
-@Setter
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class ImportResponse<T> {
+    /**
+     * The total number of successfully imported records.
+     */
     private final AtomicLong totalSuccess = new AtomicLong(0);
-    private final AtomicLong totalFailed = new AtomicLong(0);
-    private final Map<Integer, List<ExcelCellError>> errors = new ConcurrentHashMap<>();
-    private final List<T> successfulImports = new ArrayList<>(); // New field
 
     /**
-     * Increment the total success count by one.
+     * The total number of failed imports.
+     */
+    private final AtomicLong totalFailed = new AtomicLong(0);
+
+    /**
+     * A map of row indices to lists of errors encountered during import.
+     * Key: Row number (1-based index).
+     * Value: List of errors for that row.
+     */
+    private final Map<Integer, List<ExcelCellError>> errors = new ConcurrentHashMap<>();
+
+    /**
+     * A list of successfully imported top-level DTO instances.
+     */
+    private final List<T> successfulImports = new ArrayList<>();
+
+    /**
+     * Increments the success count and adds the imported instance to the list.
+     *
+     * @param instance the successfully imported DTO instance
      */
     public void incrementSuccess(T instance) {
         totalSuccess.incrementAndGet();
@@ -32,32 +53,32 @@ public class ImportResponse<T> {
     }
 
     /**
-     * Increment the total failed count by one.
+     * Increments the failed count by one.
      */
     public void incrementFailed() {
         totalFailed.incrementAndGet();
     }
 
     /**
-     * Add an error to the errors map.
+     * Adds an error to the errors map for a specific row.
      *
-     * @param rowIndex the row index where the error occurred
-     * @param error the error to add
+     * @param rowIndex the row index where the error occurred (1-based)
+     * @param error    the error to add
      */
     public void addError(int rowIndex, ExcelCellError error) {
         errors.computeIfAbsent(rowIndex, k -> new ArrayList<>()).add(error);
     }
 
     /**
-     * Get a summary of the import process, including total successes, failures, and error details.
+     * Generates a summary of the import process, including total successes, failures, and detailed errors.
      *
-     * @return a string summary of the import process
+     * @return a string summarizing the import results
      */
     public String getSummary() {
         StringBuilder summary = new StringBuilder();
         summary.append("Import Summary:\n")
-                .append("Total Success: ").append(totalSuccess).append("\n")
-                .append("Total Failed: ").append(totalFailed).append("\n");
+                .append("Total Success: ").append(totalSuccess.get()).append("\n")
+                .append("Total Failed: ").append(totalFailed.get()).append("\n");
 
         if (!errors.isEmpty()) {
             summary.append("Errors:\n");
@@ -72,8 +93,3 @@ public class ImportResponse<T> {
         return summary.toString();
     }
 }
-
-
-//ImportResponse
-// fields: totalSuccess, totalFailed, errors
-// methods: addError, getSummary
